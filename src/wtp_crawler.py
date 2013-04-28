@@ -60,16 +60,13 @@ def load_petitions(file_name):
         with open(file_name, 'r') as f:
             petitions = json.load(f, object_hook=wtp_data.load_hook)
 
-        for p in petitions:
-            print str(p)
-
         return petitions
     except IOError:
         return []
 
 def update_petitions(petitions, updated_petitions):
-    petition_set = set(petitions)
-    updates_set = set(updated_petitions)
+    petition_set = frozenset(petitions)
+    updates_set = frozenset(updated_petitions)
 
     new_petitions = updates_set - petition_set
     # intersection is petitions that need updating
