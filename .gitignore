@@ -11,6 +11,8 @@ build
 eggs
 parts
 bin
+local
+include
 var
 sdist
 develop-eggs

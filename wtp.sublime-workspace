@@ -1,0 +1,219 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"petit",
+				"petition_sigs"
+			],
+			[
+				"petiti",
+				"petition_title"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "#!/usr/env python\n\nimport argparse\nimport pickle\nimport urllib \nfrom bs4 import BeautifulSoup, Comment\nimport re\nimport json\nfrom wtp_data import Petition, PetitionEncoder\n\nBASE_URL = 'https://petitions.whitehouse.gov'\nPEITION_LIST_URL = BASE_URL + '/petitions/all/{0}/1/0'\n\ndef listPetitions():\n    PETITION_PAGES = 8\n    petitions = []\n    for i in range(1, PETITION_PAGES+1):\n        url = PEITION_LIST_URL.format(i)\n        print(\"Getting Threads for \", url)\n        page = urllib.urlopen(url)\n        #data = page.read()\n        #print(data)\n\n        bs = BeautifulSoup(page, 'html5lib')\n        #print (bs.prettify())\n        for petition_div in bs.find_all('div', id=re.compile('petition-[0-9]')):\n            petition_title_link = petition_div.find(class_='title').a\n            petition_title = petition_title_link.string\n            petition_url = BASE_URL + petition_title_link['href']\n            petition_sigs = int(petition_div.find(class_='num-sig').span.string.replace(',', ''))\n\n            petition = Petition(petition_url, petition_title, petition_sigs)\n            petitions.append(petition)\n    return petitions            \n\ndef getContent(threads):\n    pageContents = {}\n    for (url, title) in threads.items():\n        title = title.encode('ascii', 'ignore')\n        print(\"Getting content for \", title)\n        page = urllib.urlopen(url)\n        bs = BeautifulSoup(page, 'lxml')\n\n        # string all comments\n        comments = bs.findAll(text=lambda text:isinstance(text, Comment))\n        for comment in comments:\n            comment.extract()\n\n        contentTag = bs.find(id='posts')\n        divs = contentTag.find_all('div')\n        contentStr = ''\n        for div in divs:\n            id = div.get('id')\n            if (id != None and\n                id.startswith('post_message')):\n                contentStr = contentStr + ' '.join(div.find_all(text=True))\n        pageContents[url] = contentStr.encode('ascii', 'ignore')\n    return pageContents\n\ndef crawl():\n    petitions = listPetitions()\n    \n    for petition in petitions:\n        \n    print(PetitionEncoder().encode(petitions))\n\ndef main():\n    argParser = argparse.ArgumentParser(\n        description='A Crawler for a specific forum')\n    argParser.add_argument('-a', '--action', choices=['crawl', 'xml'], required=True,\n        help='Specify the action to either crawl the form or to generate xml from a previous crawl')\n    args = argParser.parse_args()\n\n    if args.action == 'crawl':\n        # crawl the form\n        print(\"Crawling the Forum\")\n        crawl()\n    elif args.action == 'xml':\n        # generate xml from the previous crawl\n        print(\"Generating Solr XML\")\n        genxml()\n\n    #\n    #createXML(threads, content)\n\nif __name__ == \"__main__\":\n    main()\n",
+			"file": "src/wtp_crawler.py",
+			"file_size": 2726,
+			"file_write_time": 1367081164000000,
+			"settings":
+			{
+				"buffer_size": 2766,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/wtp_data.py",
+			"settings":
+			{
+				"buffer_size": 339,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/dann/dev/school/cs410/project/test/src/wtp_crawler.py"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"json",
+			"threads",
+			"Threads",
+			"threads"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "src/wtp_crawler.py",
+					"settings":
+					{
+						"buffer_size": 2766,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2038,
+								2038
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 867.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "src/wtp_data.py",
+					"settings":
+					{
+						"buffer_size": 339,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								154,
+								154
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"replace":
+	{
+		"height": 0.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true
+}
