@@ -12,7 +12,7 @@ BASE_URL = 'https://petitions.whitehouse.gov'
 PEITION_LIST_URL = BASE_URL + '/petitions/all/{0}/1/0'
 
 def listPetitions():
-    PETITION_PAGES = 1
+    PETITION_PAGES = 8
     petitions = []
     for i in range(1, PETITION_PAGES+1):
         url = PEITION_LIST_URL.format(i)
